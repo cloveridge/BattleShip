@@ -334,10 +334,10 @@ if __name__ == "__main__":
 	player_2_name = input("Player 2, enter your name:\n> ")
 
 	SHIP_INFO = [
-		#("Aircraft Carrier", 5),
-		#("Battleship", 4),
-		#("Submarine", 3),
-		#("Cruiser", 3),
+		("Aircraft Carrier", 5),
+		("Battleship", 4),
+		("Submarine", 3),
+		("Cruiser", 3),
 		("Patrol Boat", 2)
 	]
 
