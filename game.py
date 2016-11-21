@@ -1,5 +1,6 @@
 from player import Player
 from board import Board
+from copy import deepcopy
 import re
 import os
 
@@ -13,10 +14,10 @@ def input_filter(text):
 class Game:
     players = []
     SHIP_INFO = [
-        ("Aircraft Carrier", 5),
-        ("Battleship", 4),
-        ("Submarine", 3),
-        ("Cruiser", 3),
+        #("Aircraft Carrier", 5),
+        #("Battleship", 4),
+        #("Submarine", 3),
+        #("Cruiser", 3),
         ("Patrol Boat", 2)
     ]
     winner = None
@@ -37,6 +38,7 @@ class Game:
 
             # Loop until a good guess has been made
             while True:
+                cls()
                 # Print quiet board for other player
                 self.other_player.board.display_quiet_board()
                 print("\n" + ("==" * (len(player_1.letters) + 1)) + "\n")
@@ -69,9 +71,18 @@ class Game:
         cls()
         print("{}, please step away.".format(self.current_player.name))
         input("{}, [Press Enter] when ready.".format(self.other_player.name))
-        temp_val = self.current_player
-        self.current_player = self.other_player
-        self.other_player = temp_val
+        temp_val = deepcopy(self.current_player)
+        temp_val.board = deepcopy(self.current_player.board)
+        self.current_player.board = None
+        self.current_player = None
+        self.current_player = deepcopy(self.other_player)
+        self.current_player.board = deepcopy(self.other_player.board)
+        self.other_player.board = None
+        self.other_player = None
+        self.other_player = deepcopy(temp_val)
+        self.other_player.board = deepcopy(temp_val.board)
+        temp_val.board = None
+        temp_val = None
 
     def place_ships(self):
         self.switch_players()

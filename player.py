@@ -24,8 +24,7 @@ class Player:
 
     def create_board(self):
         self.board = None
-        board = Board(self.letters, self.size)
-        self.board = board
+        self.board = Board(self.letters, self.size)
 
     def win(self):
         self.wins += 1
@@ -39,12 +38,12 @@ class Player:
         :return: True for valid placement
         """
         col = self.letters.index(loc[0])
-        row = loc[1:]
+        row = int(loc[1:])
 
         if direction == "v":
             # Make sure the ship will fit
             for spot in range(0, ship_size):
-                if row + spot > self.size - 1\
+                if int(row) + spot > self.size - 1 \
                 or self.board.spaces.get(
                 self.letters[col] + str(row + spot)) != Board.EMPTY \
                 or self.board.spaces.get(
@@ -85,7 +84,7 @@ class Player:
         drctn = input("[v]ertical or [h]orizontal?\n>").lower()[0]
 
         col = self.letters.index(loc[0])
-        row = loc[1:]
+        row = int(loc[1:])
 
         if not self.ship_spacing_check(ship_size, loc, drctn):
             return False
