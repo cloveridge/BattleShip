@@ -1,18 +1,27 @@
-from board import Board
 import re
 import os
 
 
 def cls():
-    os.system("clear")
+    """Clears the screen using the system, or printing 100 newlines"""
+    try:
+        os.system("clear")
+    finally:
+        print("\n"*100)
 
 
 def input_filter(text):
+    """Takes text, removes whitespace, and returns it"""
     return re.sub('s', "", text)
 
 
 class Game:
+    """The Game class, which directs the flow of the game for two players.
 
+    Each game instance has 2 players, and after establishing all elements,
+    runs the game loop. The game loop ends when a winner has been declared,
+    the winner is reported to the application, and the Game object is destroyed.
+    """
     SHIP_INFO = [
         ("Aircraft Carrier", 5),
         ("Battleship", 4),
@@ -44,16 +53,20 @@ class Game:
         self.switch_players()
         self.place_ships()
 
-        self.game_loop()
+        self.run_game()
 
-    def game_loop(self):
-        # Run the regular game loop through here.
+    def run_game(self):
+        """The game loop which runs until a winner has been declared.
+
+        Each player takes turns making guesses until one of them has guessed
+        all of the other player's ships.
+        """
         while True:
             # Alternate turns
             self.switch_players()
 
-            # Loop until a good guess has been made
             while True:
+                # Loop until a good guess has been made
                 cls()
                 # Print plain board for other player
                 self.players[abs(self.current - 1)].board.display_quiet_board()
@@ -68,11 +81,12 @@ class Game:
                 if location == "":
                     continue
                 if self.players[abs(self.current - 1)].board.guess(location):
+                    # A good guess has been made
                     break
 
 
             if self.players[abs(self.current - 1)].board.ship_spaces == 0:
-                # If no ships left, break
+                # If other player has no ships left, break and set a winner.
                 self.winner = self.current
 
                 cls()
@@ -83,6 +97,7 @@ class Game:
                 print("\nAdmiral {} won!\n".format(self.players[
                                                        self.current].name))
 
+                # Display both full boards for review.
                 self.players[abs(self.current - 1)].board.display_full_board()
                 print("\n" + ("==" * (len(self.letters) + 1)) + "\n")
                 self.players[self.current].board.display_full_board()
@@ -90,7 +105,7 @@ class Game:
                 break
 
             else:
-                # Otherwise recap the turn
+                # If there are ships left, recap the turn
                 cls()
                 print("{}'s summary:".format(self.players[self.current].name))
                 # Print quiet board for other player
@@ -103,12 +118,14 @@ class Game:
                 cls()
 
     def switch_players(self):
+        """Changes the 1/0 player list index to its inverse"""
         cls()
         print("{}, please step away.".format(self.players[self.current].name))
         self.current = abs(self.current - 1)
         input("{}, [Press Enter].".format(self.players[self.current].name))
 
     def place_ships(self):
+        """Places each ship in SHIP_INFO"""
         for ship in self.SHIP_INFO:
             while True:
                 cls()

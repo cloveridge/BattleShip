@@ -1,7 +1,11 @@
-from board import *
+from board import Board
 
 
 class Player:
+    """A player in the game.
+
+    Each player has a name, wins, and a game board they own.
+    """
     name = ""
     wins = 0
 
@@ -11,6 +15,7 @@ class Player:
         self.board = Board(size, letters)
 
     def set_name(self):
+        """Sets the player's name"""
         while True:
             self.name = input("What is your name?\n>").capitalize()
             if self.name != "":
@@ -19,4 +24,5 @@ class Player:
         input("[Press Enter]")
 
     def win(self):
+        """Adds a win to the player's count"""
         self.wins += 1

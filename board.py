@@ -1,4 +1,10 @@
 class Board:
+    """The game board which contains a defined range of spaces.
+
+    Each Board instance is owned by a Player instance, and contains a dict of "spaces".
+    The board contains controls for interacting with it, including placing ships, and
+    guessing where other players' ships are.
+    """
     EMPTY = 'O'
     VERTICAL_SHIP = '|'
     HORIZONTAL_SHIP = '-'
@@ -21,7 +27,7 @@ class Board:
         self.reset_board()
 
     def display_full_board(self):
-        # Displays the board
+        """Displays the full, unedited board"""
         for num in range(0, self.size + 1):
             row = ""
 
@@ -41,6 +47,7 @@ class Board:
             print(row)
 
     def reset_board(self):
+        """Resets the board for a new game"""
         self.guesses = []
         self.ship_spaces = 0
 
@@ -49,7 +56,7 @@ class Board:
                 self.spaces["{}{}".format(let, num)] = self.EMPTY
 
     def display_quiet_board(self):
-        # Displays the board without ships
+        """Display's the player's board without ships"""
 
         for num in range(0, self.size + 1):
             row = ""
@@ -72,12 +79,16 @@ class Board:
             print(row)
 
     def ship_spacing_check(self, ship_size, loc, direction):
-        """
-        Makes sure the player's new ship will fit in the selected placement
-        :param ship_size: The length of the ship
-        :param loc: The ship's starting spot
-        :param direction: vertical or horizontal (Read as "v" or "h")
-        :return: True for valid placement
+        """Makes sure the player's new ship will fit in the selected placement
+
+        Keyword Arguments:
+        ship_size -- The length of the ship
+        loc -- The ship's top-/left-most spot
+        direction -- vertical or horizontal (Read as "v" or "h")
+
+        Return Values:
+        False -- if the ship won't fit
+        True -- if the ship can fit successfully without conflict
         """
         col = self.columns.index(loc[0])
         row = int(loc[1:])
@@ -109,13 +120,19 @@ class Board:
         return True
 
     def place_ship(self, ship_size, loc):
-        """
-        attempts to place the ship on the board. If successful,
-        returns 1, otherwise, it reports an error and returns 0.
+        """Attempt to place the ship on the player's board.
+
+        Keyword Arguments:
+        ship_size -- how many spaces the ship will take up (Required)
+        loc -- the top-/left-most space on the board to start the ship (Required)
+
+        Return Values:
+        False -- if any part of the ship hits a ship or runs off the board
+        True -- if the ship was placed successfully, without conflict
         """
 
-        # Verifies each space the ship would take is open and exists
         if self.spaces.get(loc) is None:
+            # Verifies each space the ship would take is open and exists
             print("{} isn't a valid space on the board!".format(loc.upper()))
             print("Please try again, with a space like \"A1\"")
             input("[Press Enter]")
@@ -136,10 +153,13 @@ class Board:
             else:
                 print("Try again, with \"v\" or \"h\".")
 
+        # Determines the row/column from the user's location input
         col = self.columns.index(loc[0])
         row = int(loc[1:])
 
+
         if not self.ship_spacing_check(ship_size, loc, direction):
+            # Checks to make sure the ship will fit in the location
             return False
         else:
             # Place the ships
@@ -156,33 +176,44 @@ class Board:
                         self.columns[col + spot] + str(row)
                         ] = self.HORIZONTAL_SHIP
             self.ship_spaces += ship_size
+            # The ship was placed successfully
             return True
 
     def guess(self, guess):
+        """Attempts to attack a space on the enemy's board.
+
+        Keyword Argument:
+        guess -- the location on the board to attack.
+
+        Return Value:
+        False -- if the space is not on the board, not a real space, or has already been guessed
+        True -- if the space is either a ship (Hit), or empty (Miss)
+        """
         guess = guess.capitalize()
-        # Checks to make sure the input is in the proper format
         if guess[0] not in self.columns or not guess[1].isnumeric():
+            # Checks to make sure the input is in the proper format
             print("{} is not valid. Try something like\"A1\"".format(guess))
             input("[Press Enter]")
             return False
-        # Checks to make sure the space is on the board
         elif self.spaces.get(guess) is None:
+            # Checks to make sure the space is on the board
             print("{} is not a space! Try something like\"A1\"".format(guess))
             input("[Press Enter]")
             return False
         elif self.spaces[guess] == self.EMPTY:
+            # Checks for the space to be empty
             self.spaces[guess] = self.MISS
             self.guesses.append(guess)
             print("It's a miss!")
             input("[Press Enter]")
             return True
-
         elif guess in self.guesses:
+            # Checks that the space is a ship, not a previous guess.
             print("{} has already been guessed!".format(guess))
             input("[Press Enter]")
             return False
-
         else:
+            # It's a ship, and a hit
             self.spaces[guess] = self.HIT
             self.guesses.append(guess)
             self.ship_spaces -= 1
